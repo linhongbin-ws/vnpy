@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+result=$(python ./check_pyVersion.py 2>&1)
+
+if [ $result != "p" ]; then
+    echo "python should be 3.6 or lower version of python3, you can use virtual environment like anaconda or pipenv"
+    exit
+else
 
 python=$1
 prefix=$2
@@ -36,10 +42,12 @@ $python -m pip install psycopg2-binary
 $python -m pip install https://pip.vnpy.com/colletion/ibapi-9.76.1.tar.gz
 
 # Install Python Modules
-$python -m pip install -r requirements.txt
+$python -m pip install -r requirements.txt --use-feature=2020-resolver
 
 # Install local Chinese language environment
 locale-gen zh_CN.GB18030
 
 # Install vn.py
 $python -m pip install . $@
+
+fi
