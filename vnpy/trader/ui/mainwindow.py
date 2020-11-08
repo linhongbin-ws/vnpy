@@ -28,6 +28,7 @@ from .widget import (
 from .editor import CodeEditor
 from ..engine import MainEngine
 from ..utility import get_icon_path, TRADER_DIR
+import platform
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -92,6 +93,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def init_menu(self) -> None:
         """"""
         bar = self.menuBar()
+        if platform.system() == 'Darwin':
+            bar.setNativeMenuBar(False) # fix bug: not showing menu bar using native style on mac
 
         # System menu
         sys_menu = bar.addMenu("系统")
