@@ -37,8 +37,11 @@ from vnpy.trader.object import (
     PositionData,
     SubscribeRequest,
     OrderRequest,
-    CancelRequest
+    CancelRequest,
+    HistoryRequest,
+    BarData
 )
+from vnpy.trader.database.database import BaseDatabaseManager
 
 EXCHANGE_VT2FUTU = {
     Exchange.SMART: "US",
@@ -75,6 +78,8 @@ STATUS_FUTU2VT = {
 }
 
 CHINA_TZ = pytz.timezone("Asia/Shanghai")
+
+
 
 
 class FutuGateway(BaseGateway):
@@ -387,6 +392,51 @@ class FutuGateway(BaseGateway):
         if self.trade_ctx:
             self.trade_ctx.close()
 
+    def query_history_N_save_bar(self, req: HistoryRequest, gateway_name: str, database_manager: BaseDatabaseManager) -> int:
+        """
+        Query bar history data and save data to database
+        """
+        # history = []
+        #
+        # start_time = generate_datetime3(req.start)
+        # end_time = generate_datetime3(req.end)
+        #
+        # mt5_req = {
+        #     "type": FUNCTION_QUERYHISTORY,
+        #     "symbol": req.symbol.replace('-', '.'),
+        #     "interval": INTERVAL_VT2MT[req.interval],
+        #     "start_time": start_time,
+        #     "end_time": end_time,
+        # }
+        # packet = self.client.send_request(mt5_req)
+        #
+        # if packet["result"] == -1:
+        #     self.write_log("获取历史数据失败")
+        # else:
+        #     for d in packet["data"]:
+        #         bar = BarData(
+        #             symbol=req.symbol.replace('.', '-'),
+        #             exchange=Exchange.OTC,
+        #             datetime=generate_datetime2(d["time"]),
+        #             interval=req.interval,
+        #             volume=d["real_volume"],
+        #             open_price=d["open"],
+        #             high_price=d["high"],
+        #             low_price=d["low"],
+        #             close_price=d["close"],
+        #             gateway_name=self.gateway_name
+        #         )
+        #         history.append(bar)
+        #
+        #     data = packet["data"]
+        #     begin = generate_datetime2(data[0]["time"])
+        #     end = generate_datetime2(data[-1]["time"])
+        #
+        msg = "this is a test"
+        self.write_log(msg)
+        history = [];
+        return history
+
     def get_tick(self, code):
         """
         Get tick buffer.
@@ -531,3 +581,15 @@ def generate_datetime(s: str) -> datetime:
 
     dt = CHINA_TZ.localize(dt)
     return dt
+
+
+def generate_datetime3(datetime: datetime) -> str:
+    """"""
+    dt = datetime.replace(tzinfo=None)
+    local_tz = LOCAL_TZ.normalize(dt.astimezone(LOCAL_TZ))
+    utc_tz = pytz.utc.normalize(local_tz.astimezone(pytz.utc))
+    utc_tz = utc_tz.replace(tzinfo=None)
+    dt = utc_tz.isoformat()
+    dt = dt.replace('T', ' ')
+    return dt
+

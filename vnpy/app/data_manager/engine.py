@@ -199,24 +199,32 @@ class ManagerEngine(BaseEngine):
             end=datetime.now()
         )
 
+
         vt_symbol = f"{symbol}.{exchange.value}"
         contract = self.main_engine.get_contract(vt_symbol)
 
-        # If history data provided in gateway, then query
-        if contract and contract.history_data:
-            data = self.main_engine.query_history(
-                req, contract.gateway_name
-            )
-        # Otherwise use RQData to query data
+        if contract.gateway_name == 'FUTU':
+            if contract and contract.history_data:
+                data_len = self.main_engine.query_history_N_save_bar(
+                    req, contract.gateway_name, database_manager
+                )
+                return (len(data_len))
         else:
-            if not rqdata_client.inited:
-                rqdata_client.init()
+            # If history data provided in gateway, then query
+            if contract and contract.history_data:
+                data = self.main_engine.query_history(
+                    req, contract.gateway_name
+                )
+            # Otherwise use RQData to query data
+            else:
+                if not rqdata_client.inited:
+                    rqdata_client.init()
 
-            data = rqdata_client.query_history(req)
+                data = rqdata_client.query_history(req)
 
-        if data:
-            database_manager.save_bar_data(data)
-            return(len(data))
+            if data:
+                database_manager.save_bar_data(data)
+                return(len(data))
 
         return 0
 

@@ -41,7 +41,7 @@ from .object import (
 )
 from .setting import SETTINGS
 from .utility import get_folder_path, TRADER_DIR
-
+from vnpy.trader.database.database import BaseDatabaseManager
 
 class MainEngine:
     """
@@ -216,6 +216,16 @@ class MainEngine:
             return gateway.query_history(req)
         else:
             return None
+
+    def query_history_N_save_bar(self, req: HistoryRequest, gateway_name: str, database_manager: BaseDatabaseManager) -> int:
+        """
+            query data with saving to database option
+        """
+        gateway = self.get_gateway(gateway_name)
+        if gateway:
+            return gateway.query_history_N_save_bar(req)
+        else:
+            return 0
 
     def close(self) -> None:
         """
